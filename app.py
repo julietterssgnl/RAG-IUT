@@ -4,6 +4,13 @@ from rag.indexing.text_splitter import TextSplitter
 from rag.indexing.vectorstore import VectorStore
 from rag.chat.chatbot import Chatbot
 
+# Au début de votre app.py, ajoutez :
+st.set_page_config(
+    page_title="Accueil - Assistant Assurance",
+    page_icon="🏠",
+    layout="wide"
+)
+
 def init_components(api_key: str):
     """
     Initialise tous les composants nécessaires au chatbot.
@@ -15,9 +22,9 @@ def init_components(api_key: str):
     loader = DocumentLoader("documents")
     documents = loader.load_documents()
     
-    # Découpage des documents et enregistrement dans un fichier JSON
+    # Découpage des documents
     splitter = TextSplitter()
-    chunks = splitter.split_documents(documents, output_file="chunks.json")
+    chunks = splitter.split_documents(documents)
     
     # Création et remplissage de la base vectorielle
     vector_store = VectorStore()
