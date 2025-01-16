@@ -2,7 +2,7 @@
 python -m venv .venv
 .venv\Scripts\activate sous Windows # ou source env/bin/activate sinon
 
-# installation des libra
+# installation des librairies
 pip install -r requirements.txt
 <!-- pip install google-generativeai==0.4.0 -->
 
