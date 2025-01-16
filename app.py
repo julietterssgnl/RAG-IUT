@@ -3,8 +3,9 @@ from rag.indexing.document_loader import DocumentLoader
 from rag.indexing.text_splitter import TextSplitter
 from rag.indexing.vectorstore import VectorStore
 from rag.chat.chatbot import Chatbot
+from rag.feedback.feedback_manager import FeedbackManager
 
-# Au début de votre app.py, ajoutez :
+# Configuration de la page
 st.set_page_config(
     page_title="Accueil - Assistant Assurance",
     page_icon="🏠",
@@ -14,9 +15,6 @@ st.set_page_config(
 def init_components(api_key: str):
     """
     Initialise tous les composants nécessaires au chatbot.
-    
-    Args:
-        api_key (str): Clé API Google AI
     """
     # Chargement des documents
     loader = DocumentLoader("documents")
@@ -30,10 +28,11 @@ def init_components(api_key: str):
     vector_store = VectorStore()
     vector_store.add_documents(chunks)
     
-    # Initialisation du chatbot
+    # Initialisation du chatbot et du gestionnaire de feedback
     chatbot = Chatbot(api_key)
+    feedback_manager = FeedbackManager()
     
-    return vector_store, chatbot
+    return vector_store, chatbot, feedback_manager
 
 def main():
     st.title("Assistant Assurance OptiSecure")
@@ -46,14 +45,15 @@ def main():
             st.warning("Veuillez entrer votre clé API pour continuer")
             return
             
-    # Initialisation des composants (à faire une seule fois)
+    # Initialisation des composants
     if 'initialized' not in st.session_state and api_key:
         try:
-            vector_store, chatbot = init_components(api_key)
+            vector_store, chatbot, feedback_manager = init_components(api_key)
             
             # Stockage dans la session
             st.session_state.vector_store = vector_store
             st.session_state.chatbot = chatbot
+            st.session_state.feedback_manager = feedback_manager
             st.session_state.initialized = True
             st.success("Système initialisé avec succès!")
             
@@ -66,6 +66,7 @@ def main():
         st.subheader("Posez votre question")
         query = st.text_input("Votre question sur les contrats d'assurance:")
         
+        # Si une question est posée
         if query:
             with st.spinner("Recherche en cours..."):
                 # Recherche des documents pertinents
@@ -74,14 +75,35 @@ def main():
                 # Génération de la réponse
                 response = st.session_state.chatbot.generate_response(query, context)
                 
-                # Affichage de la réponse dans un cadre distinct
+                # Stockage temporaire de la dernière interaction
+                st.session_state.last_query = query
+                st.session_state.last_response = response
+                
+                # Affichage de la réponse
                 with st.container():
                     st.markdown("---")
                     st.markdown("### Réponse:")
                     st.write(response)
-                    st.markdown("---")
                     
-        # Ajout d'un bouton pour réinitialiser le système si nécessaire
+                    # Boutons de feedback
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        if st.button("👍 Utile"):
+                            st.session_state.feedback_manager.add_feedback(
+                                query, response, True
+                            )
+                            st.success("Merci pour votre retour !")
+                            
+                    with col2:
+                        if st.button("👎 Pas utile"):
+                            st.session_state.feedback_manager.add_feedback(
+                                query, response, False
+                            )
+                            st.success("Merci pour votre retour !")
+                    
+                    st.markdown("---")
+        
+        # Bouton de réinitialisation
         if st.button("Réinitialiser le système"):
             st.session_state.clear()
             st.experimental_rerun()
