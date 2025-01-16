@@ -1,6 +1,7 @@
 from sentence_transformers import SentenceTransformer
 import chromadb
 from typing import List, Dict
+import os
 
 class VectorStore:
     """
@@ -15,9 +16,15 @@ class VectorStore:
             collection_name (str): Nom de la collection dans ChromaDB
         """
         self.embedding_model = SentenceTransformer('HIT-TMG/KaLM-embedding-multilingual-mini-instruct-v1.5')
-        self.client = chromadb.Client()
-        self.collection = self.client.create_collection(name=collection_name)
+        # Utilisation d'une persistance locale pour ChromaDB
+        self.client = chromadb.PersistentClient(path="./chroma_db")
         
+        # Gestion de la collection
+        try:
+            self.collection = self.client.get_collection(name=collection_name)
+        except:
+            self.collection = self.client.create_collection(name=collection_name)
+    
     def add_documents(self, documents: List[Dict[str, str]]):
         """
         Vectorise et stocke les documents dans ChromaDB.
@@ -25,18 +32,20 @@ class VectorStore:
         Args:
             documents (List[Dict[str, str]]): Liste des documents à stocker
         """
-        texts = [doc['page_content'] for doc in documents]
-        embeddings = self.embedding_model.encode(texts).tolist()
-        metadatas = [doc['metadata'] for doc in documents]
-        ids = [f"doc_{i}" for i in range(len(documents))]
-        
-        self.collection.add(
-            embeddings=embeddings,
-            documents=texts,
-            metadatas=metadatas,
-            ids=ids
-        )
-        
+        # Vérifier si la collection est vide avant d'ajouter des documents
+        if self.collection.count() == 0:
+            texts = [doc['page_content'] for doc in documents]
+            embeddings = self.embedding_model.encode(texts).tolist()
+            metadatas = [doc['metadata'] for doc in documents]
+            ids = [f"doc_{i}" for i in range(len(documents))]
+            
+            self.collection.add(
+                embeddings=embeddings,
+                documents=texts,
+                metadatas=metadatas,
+                ids=ids
+            )
+    
     def search(self, query: str, k: int = 3) -> List[Dict]:
         """
         Recherche les documents les plus pertinents pour une requête.

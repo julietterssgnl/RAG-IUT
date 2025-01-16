@@ -12,101 +12,150 @@ st.set_page_config(
     layout="wide"
 )
 
+# CSS personnalisé pour les boutons
+st.markdown("""
+<style>
+    /* Style par défaut pour les boutons */
+    .stButton button {
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    /* Style pour le bouton positif */
+    div[data-testid="column"]:nth-of-type(1) .stButton button:hover {
+        background-color: #4CAF50 !important;
+        color: white !important;
+        border-color: #4CAF50 !important;
+    }
+    
+    /* Style pour le bouton négatif */
+    div[data-testid="column"]:nth-of-type(2) .stButton button:hover {
+        background-color: #f44336 !important;
+        color: white !important;
+        border-color: #f44336 !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 def init_components(api_key: str):
     """
     Initialise tous les composants nécessaires au chatbot.
+    Args:
+        api_key (str): Clé API Google AI
+    Returns:
+        tuple: (vector_store, chatbot, feedback_manager)
     """
-    # Chargement des documents
-    loader = DocumentLoader("documents")
-    documents = loader.load_documents()
+    st.session_state.api_key = api_key  # Sauvegarde de la clé API dans la session
     
-    # Découpage des documents
-    splitter = TextSplitter()
-    chunks = splitter.split_documents(documents)
-    
-    # Création et remplissage de la base vectorielle
-    vector_store = VectorStore()
-    vector_store.add_documents(chunks)
-    
-    # Initialisation du chatbot et du gestionnaire de feedback
-    chatbot = Chatbot(api_key)
-    feedback_manager = FeedbackManager()
-    
-    return vector_store, chatbot, feedback_manager
+    # Chargement et traitement des documents
+    with st.spinner("Initialisation en cours..."):
+        try:
+            # Chargement des documents
+            st.info("Chargement des documents...")
+            loader = DocumentLoader("documents")
+            documents = loader.load_documents()
+            
+            # Découpage des documents
+            st.info("Découpage des documents...")
+            splitter = TextSplitter()
+            chunks = splitter.split_documents(documents)
+            
+            # Création et remplissage de la base vectorielle
+            st.info("Création de la base vectorielle...")
+            vector_store = VectorStore()
+            vector_store.add_documents(chunks)
+            
+            # Initialisation du chatbot et du gestionnaire de feedback
+            st.info("Initialisation du chatbot...")
+            chatbot = Chatbot(api_key)
+            feedback_manager = FeedbackManager()
+            
+            st.success("Initialisation terminée avec succès!")
+            return vector_store, chatbot, feedback_manager
+            
+        except Exception as e:
+            st.error(f"Erreur lors de l'initialisation: {str(e)}")
+            return None, None, None
+
+def handle_logout():
+    """Gère la déconnexion de l'utilisateur."""
+    for key in list(st.session_state.keys()):
+        del st.session_state[key]
 
 def main():
     st.title("Assistant Assurance OptiSecure")
     
-    # Zone de saisie de la clé API dans la barre latérale
+    # Gestion de la connexion dans la barre latérale
     with st.sidebar:
         st.header("Configuration")
-        api_key = st.text_input("Entrez votre clé API Google AI", type="password")
-        if not api_key:
-            st.warning("Veuillez entrer votre clé API pour continuer")
-            return
-            
-    # Initialisation des composants
-    if 'initialized' not in st.session_state and api_key:
-        try:
-            vector_store, chatbot, feedback_manager = init_components(api_key)
-            
-            # Stockage dans la session
+        
+        # Affichage du statut de connexion
+        if 'api_key' in st.session_state:
+            st.success("🟢 Connecté")
+            if st.button("Déconnexion"):
+                handle_logout()
+                st.rerun()
+        else:
+            api_key = st.text_input("Entrez votre clé API Google AI", type="password")
+            if api_key:
+                st.session_state.api_key = api_key
+                st.rerun()
+            else:
+                st.warning("Veuillez entrer votre clé API pour continuer")
+                return
+    
+    # Initialisation des composants si nécessaire
+    if 'api_key' in st.session_state and 'initialized' not in st.session_state:
+        vector_store, chatbot, feedback_manager = init_components(st.session_state.api_key)
+        if vector_store and chatbot and feedback_manager:
             st.session_state.vector_store = vector_store
             st.session_state.chatbot = chatbot
             st.session_state.feedback_manager = feedback_manager
             st.session_state.initialized = True
-            st.success("Système initialisé avec succès!")
-            
-        except Exception as e:
-            st.error(f"Erreur lors de l'initialisation: {str(e)}")
-            return
     
     # Interface utilisateur principale
     if st.session_state.get('initialized'):
         st.subheader("Posez votre question")
         query = st.text_input("Votre question sur les contrats d'assurance:")
         
-        # Si une question est posée
         if query:
             with st.spinner("Recherche en cours..."):
-                # Recherche des documents pertinents
-                context = st.session_state.vector_store.search(query)
-                
-                # Génération de la réponse
-                response = st.session_state.chatbot.generate_response(query, context)
-                
-                # Stockage temporaire de la dernière interaction
-                st.session_state.last_query = query
-                st.session_state.last_response = response
-                
-                # Affichage de la réponse
-                with st.container():
-                    st.markdown("---")
-                    st.markdown("### Réponse:")
-                    st.write(response)
+                try:
+                    # Recherche et génération de la réponse
+                    context = st.session_state.vector_store.search(query)
+                    response = st.session_state.chatbot.generate_response(query, context)
                     
-                    # Boutons de feedback
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        if st.button("👍 Utile"):
-                            st.session_state.feedback_manager.add_feedback(
-                                query, response, True
-                            )
-                            st.success("Merci pour votre retour !")
-                            
-                    with col2:
-                        if st.button("👎 Pas utile"):
-                            st.session_state.feedback_manager.add_feedback(
-                                query, response, False
-                            )
-                            st.success("Merci pour votre retour !")
-                    
-                    st.markdown("---")
-        
-        # Bouton de réinitialisation
-        if st.button("Réinitialiser le système"):
-            st.session_state.clear()
-            st.experimental_rerun()
+                    # Affichage de la réponse et des boutons de feedback
+                    with st.container():
+                        st.markdown("---")
+                        st.markdown("### Réponse:")
+                        st.write(response)
+                        
+                        # Boutons de feedback avec styles personnalisés
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            if st.button("👍 Utile", key="useful"):
+                                st.session_state.feedback_manager.add_feedback(
+                                    query, response, True
+                                )
+                                st.success("Merci pour votre retour !")
+                        
+                        with col2:
+                            neg_button = st.button("👎 Pas utile", key="not_useful")
+                            if neg_button:
+                                st.session_state.feedback_manager.add_feedback(
+                                    query, response, False
+                                )
+                                st.success("Merci pour votre retour !")
+                        
+                        st.markdown("---")
+                except Exception as e:
+                    st.error(f"Une erreur est survenue : {str(e)}")
+                    # Réinitialisation en cas d'erreur de ChromaDB
+                    if "no such table: collections" in str(e):
+                        st.warning("Réinitialisation du système...")
+                        st.session_state.clear()
+                        st.rerun()
 
 if __name__ == "__main__":
     main()
