@@ -4,11 +4,6 @@ python -m venv .venv
 
 # installation des librairies
 pip install -r requirements.txt
-<!-- pip install google-generativeai==0.4.0 -->
-
-<!-- Configurez votre clé API Google AI dans une variable d'environnement :
-export GOOGLE_API_KEY="votre_clé_api"
-export GOOGLE_API_KEY="AIzaSyB3aWlb7sXNbA0bZYZp_-JqhuTr1HuaWj4" -->
 
 # Lancer l'application
 streamlit run app.py

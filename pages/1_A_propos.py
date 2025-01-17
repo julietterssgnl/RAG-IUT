@@ -24,28 +24,32 @@ def main():
     - **Recherche intelligente** : Notre système analyse en profondeur vos documents d'assurance 
     pour trouver les informations les plus pertinentes
     - **Réponses précises** : Obtenez des réponses claires et concises à vos questions
-    - **Support multilingue** : Interface en français avec capacité de compréhension contextuelle
-    - **Sécurité des données** : Vos documents sont traités de manière sécurisée
 
     ### Technologies utilisées
 
-    Cette application utilise des technologies de pointe :
+    Cette application utilise des technologies avancées pour offrir une expérience utilisateur optimale :
     - RAG (Retrieval-Augmented Generation) pour une recherche précise
     - API Google AI (Gemini) pour le traitement du langage naturel
-    - Base de données vectorielle pour une recherche optimisée
-    - Interface utilisateur Streamlit pour une expérience fluide
+    - BeautifulSoup4 pour le traitement des documents HTML
+    - Sentence Transformers pour la vectorisation des documents
+    - ChromaDB pour le stockage et la recherche de documents
+    - Streamlit pour l'interface utilisateur
+    - Statistiques de satisfaction pour améliorer le service avec Plotly
+
 
     ### Comment utiliser l'assistant
 
     1. **Configuration** : Entrez votre clé API Google AI dans la barre latérale
     2. **Posez votre question** : Saisissez votre question dans le champ de texte
     3. **Obtenez votre réponse** : L'assistant analysera vos documents et vous fournira une réponse pertinente
+    4. **Donnez votre avis** : Indiquez si la réponse était utile ou non pour améliorer le service
 
     ### Support et Contact
 
     Pour toute question ou assistance, contactez notre équipe :
-    - Email : support@optisecure.exemple.com
-    - Téléphone : 01 23 45 67 89
+    - Juliette ROSSIGNOL https://github.com/julietterssgnl/
+    - Dorine BARBEY https://github.com/dodoBrb/
+    - Thibault DAGUIN https://github.com/ThibaultDAGUIN/
 
     ---
     
@@ -62,6 +66,9 @@ def main():
         - **Base de données** : ChromaDB
         - **Modèle de langage** : Google Gemini Pro
         - **Traitement des documents** : BeautifulSoup4
+        - **Vectorisation des documents** : Sentence Transformers
+        - **Statistiques de satisfaction** : Plotly
+        - **Base de données de feedback** : SQLite
         
         ### Versions des composants
         
@@ -70,6 +77,8 @@ def main():
         - chromadb==0.5.21
         - sentence-transformers==3.3.1
         - google-genai==0.4.0
+        - google-generativeai==0.4.0
+        - plotly==5.3.1
         """)
 
 if __name__ == "__main__":
