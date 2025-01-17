@@ -80,6 +80,9 @@ def handle_logout():
 def main():
     st.title("Assistant Assurance OptiSecure")  # Titre de la page principale
     
+    # Inclure le CDN Font Awesome dans la page
+    st.markdown(""" <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"> """, unsafe_allow_html=True)
+
     # Gestion de la connexion dans la barre latérale
     with st.sidebar:
         st.header("Configuration")  # Affiche un en-tête dans la barre latérale
@@ -119,10 +122,12 @@ def main():
             st.session_state.feedback_manager = feedback_manager
             st.session_state.initialized = True  # Marque que l'initialisation est terminée
     
+
     # Interface utilisateur principale si le système est initialisé
-    if st.session_state.get('initialized'):  # Si le système a été initialisé
-        st.subheader("Posez votre question")  # Sous-titre pour la section de la question
-        query = st.text_input("Votre question sur les contrats d'assurance:")  # Champ de saisie de la question
+    if st.session_state.get('initialized'): # Si le système a été initialisé
+        st.markdown("<i class='fa fa-user'></i><strong>Posez votre question</strong>", unsafe_allow_html=True) # Sous-titre pour la section de la question
+        query = st.text_input("Votre question sur les contrats d'assurance:") # Champ de saisie de la question
+
         
         if query:  # Si une question est saisie
             with st.spinner("Recherche en cours..."):  # Affiche un message de chargement pendant la recherche
@@ -135,8 +140,10 @@ def main():
                     # Affichage de la réponse et des boutons de feedback
                     with st.container():  # Crée un conteneur pour afficher la réponse
                         st.markdown("---")
-                        st.markdown("### Réponse:")
-                        st.write(response)  # Affiche la réponse générée par le chatbot
+
+                        st.markdown("<i class='fa fa-robot'></i><strong>Réponse</strong>", unsafe_allow_html=True) # Affiche la réponse générée par le chatbot
+                        st.write(response)
+
                         
                         # Boutons de feedback avec styles personnalisés
                         col1, col2 = st.columns(2)  # Crée deux colonnes pour les boutons
