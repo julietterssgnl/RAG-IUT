@@ -14,6 +14,6 @@ export GOOGLE_API_KEY="AIzaSyB3aWlb7sXNbA0bZYZp_-JqhuTr1HuaWj4" -->
 streamlit run app.py
 
 # Dans l'application, renseigner la clé API de Google
-Clé de Thibault : AIzaSyB3aWlb7sXNbA0bZYZp_-JqhuTr1HuaWj4
-Clé de Dorine : AIzaSyCZdIINkWnBunzONvBnViUDbkkcoXGkx4g
-Clé de Juliette : AIzaSyD8aiSaioXiv9cf1oALo_zHeWHmXtT4KXE
+Clé de Thibault : AIzaSyB3aWlb7sXNbA0bZYZp_-JqhuTr1HuaWj4  
+Clé de Dorine : AIzaSyCZdIINkWnBunzONvBnViUDbkkcoXGkx4g  
+Clé de Juliette : AIzaSyD8aiSaioXiv9cf1oALo_zHeWHmXtT4KXE  
