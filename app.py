@@ -79,6 +79,9 @@ def handle_logout():
 def main():
     st.title("Assistant Assurance OptiSecure")
     
+    # Inclure le CDN Font Awesome dans la page
+    st.markdown(""" <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"> """, unsafe_allow_html=True)
+
     # Gestion de la connexion dans la barre latérale
     with st.sidebar:
         st.header("Configuration")
@@ -118,7 +121,7 @@ def main():
     
     # Interface utilisateur principale
     if st.session_state.get('initialized'):
-        st.subheader("Posez votre question")
+        st.markdown("<i class='fa fa-user'></i><strong>Posez votre question</strong>", unsafe_allow_html=True)
         query = st.text_input("Votre question sur les contrats d'assurance:")
         
         if query:
@@ -131,7 +134,7 @@ def main():
                     # Affichage de la réponse et des boutons de feedback
                     with st.container():
                         st.markdown("---")
-                        st.markdown("### Réponse:")
+                        st.markdown("<i class='fa fa-robot'></i><strong>Réponse</strong>", unsafe_allow_html=True)
                         st.write(response)
                         
                         # Boutons de feedback avec styles personnalisés
