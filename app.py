@@ -125,7 +125,7 @@ def main():
 
     # Interface utilisateur principale si le système est initialisé
     if st.session_state.get('initialized'): # Si le système a été initialisé
-        st.markdown("<i class='fa fa-user'></i><strong>Posez votre question</strong>", unsafe_allow_html=True) # Sous-titre pour la section de la question
+        st.markdown("<i class='fa fa-user'></i>  <strong>Posez votre question</strong>", unsafe_allow_html=True) # Sous-titre pour la section de la question
         query = st.text_input("Votre question sur les contrats d'assurance:") # Champ de saisie de la question
 
         
@@ -141,7 +141,7 @@ def main():
                     with st.container():  # Crée un conteneur pour afficher la réponse
                         st.markdown("---")
 
-                        st.markdown("<i class='fa fa-robot'></i><strong>Réponse</strong>", unsafe_allow_html=True) # Affiche la réponse générée par le chatbot
+                        st.markdown("<i class='fa fa-robot'></i>  <strong>Réponse</strong>", unsafe_allow_html=True) # Affiche la réponse générée par le chatbot
                         st.write(response)
 
                         
