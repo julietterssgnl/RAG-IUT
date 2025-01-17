@@ -12,27 +12,21 @@ st.set_page_config(
     layout="wide"
 )
 
-# CSS personnalisé pour les boutons
+# CSS personnalisé pour les boutons de feedback
 st.markdown("""
 <style>
-    /* Style par défaut pour les boutons */
-    .stButton button {
-        width: 100%;
-        transition: all 0.3s ease;
-    }
-    
     /* Style pour le bouton positif */
-    div[data-testid="column"]:nth-of-type(1) .stButton button:hover {
+    [data-testid="column"]:has(button:contains("👍")) button:hover {
         background-color: #4CAF50 !important;
-        color: white !important;
         border-color: #4CAF50 !important;
+        color: white !important;
     }
     
     /* Style pour le bouton négatif */
-    div[data-testid="column"]:nth-of-type(2) .stButton button:hover {
+    [data-testid="column"]:has(button:contains("👎")) button:hover {
         background-color: #f44336 !important;
-        color: white !important;
         border-color: #f44336 !important;
+        color: white !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -96,6 +90,15 @@ def main():
                 handle_logout()
                 st.rerun()
         else:
+            st.markdown("""
+            ### Obtenir une clé API
+            1. Rendez-vous sur [Google AI Studio](https://aistudio.google.com/prompts/new_chat?pli=1)
+            2. Connectez-vous avec votre compte Google
+            3. Dans les paramètres (⚙️), trouvez votre clé API
+            """)
+            
+            st.markdown("---")
+            
             api_key = st.text_input("Entrez votre clé API Google AI", type="password")
             if api_key:
                 st.session_state.api_key = api_key
