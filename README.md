@@ -1,3 +1,9 @@
+# Clone du repository Github
+git clone https://github.com/julietterssgnl/RAG-IUT.git
+
+# Se positionner dans le projet
+cd .\RAG-IUT\ 
+
 # Environnement
 python -m venv .venv
 .venv\Scripts\activate sous Windows # ou source env/bin/activate sinon
