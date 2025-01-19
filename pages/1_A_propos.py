@@ -1,6 +1,9 @@
 import streamlit as st
 
 def main():
+    """
+    Fonction 'main' du script qui affiche la page 'À propos' de l'application
+    """
     st.set_page_config(
         page_title="À propos - Assistant Assurance",
         page_icon="ℹ️",
